@@ -1,6 +1,7 @@
 ﻿using mvctest1.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -27,6 +28,11 @@ namespace mvctest1.Controllers
             IEnumerable<Purchase> purchases = db.Purchases;
 
             ViewBag.Purchases = purchases;
+
+            IEnumerable<Book> books = db.Books;
+
+            ViewBag.Books = books;
+
             return View();
         }
 
@@ -71,6 +77,43 @@ namespace mvctest1.Controllers
             return View(model);
         }
 
-        
+        //Редактирование книг
+        [HttpGet]
+        public ActionResult Edit(int id)
+        {
+            // Get the book from the database by id
+            Book book = db.Books.Find(id);
+
+            // Check if book exists
+            if (book == null)
+            {
+                return HttpNotFound(); // Return 404 error
+            }
+
+            // Pass all fields of the book to the view using ViewBag
+            ViewBag.Id = book.Id;
+            ViewBag.Title = book.Name;
+            ViewBag.Author = book.Author;
+            ViewBag.Price = book.Price;
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Edit(Book model)
+        {
+            if (ModelState.IsValid)
+            {
+                // eddit entity
+                db.Entry(model).State = EntityState.Modified;
+                db.SaveChanges();
+
+                // Redirect to the "index" action (list of all books)
+                return RedirectToAction("Index");
+            }
+
+            // If there were validation errors, display the form again
+            return View(model);
+        }
     }
 }
