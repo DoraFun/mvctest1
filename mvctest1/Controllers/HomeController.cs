@@ -47,5 +47,30 @@ namespace mvctest1.Controllers
             return "Спасибо," + purchase.Person + ", за покупку!";
         }
 
+        //добавление книг
+        [HttpGet]
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Create(Book model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Add the new entity to the database
+                db.Books.Add(model);
+                db.SaveChanges();
+
+                // Redirect to the "index" action (list of all books)
+                return RedirectToAction("Index");
+            }
+
+            // If there were validation errors, display the form again
+            return View(model);
+        }
+
+        
     }
 }

@@ -43,3 +43,17 @@ tr:nth-child(even) {
 tr:hover {
     background-color: #ddd;
 }
+
+
+.addbook {
+    background-color: #4CAF50; /* задаем цвет фона */
+    border: none; /* убираем границы кнопки */
+    color: white; /* задаем цвет текста */
+    padding: 10px 20px; /* задаем отступы внутри кнопки */
+    text-align: center; /* выравниваем текст по центру кнопки */
+    text-decoration: none; /* убираем подчеркивание текста */
+    display: inline-block; /* делаем кнопку в виде блока */
+    font-size: 16px; /* задаем размер шрифта */
+    margin: 5px; /* задаем отступы между кнопками */
+    cursor: pointer; /* изменяем курсор при наведении на кнопку */
+}
