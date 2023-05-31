@@ -31,7 +31,18 @@
                 </tr>
             }
         </table>
-        <a href="/Home/AdminPanel">Админка</a>
+
+        @{
+            if (User.Identity.IsAuthenticated)
+            {
+                <a href="/Home/AdminPanel">Админка</a>
+            }
+            else
+            {
+                <a href="/Account/login">Авторизация</a>
+            }
+        }
+
     </div>
 </body>
 </html>
