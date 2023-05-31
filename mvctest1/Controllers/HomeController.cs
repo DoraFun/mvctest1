@@ -22,6 +22,14 @@ namespace mvctest1.Controllers
             return View();
         }
 
+        public ActionResult AdminPanel()
+        {
+            IEnumerable<Purchase> purchases = db.Purchases;
+
+            ViewBag.Purchases = purchases;
+            return View();
+        }
+
         [HttpGet]
         public ActionResult Buy(int id)
         {
@@ -38,5 +46,6 @@ namespace mvctest1.Controllers
             db.SaveChanges();
             return "Спасибо," + purchase.Person + ", за покупку!";
         }
+
     }
 }

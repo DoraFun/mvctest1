@@ -10,5 +10,6 @@ namespace mvctest1.Models
     {
         public DbSet<Book> Books { get; set;}
         public DbSet<Purchase> Purchases { get; set;}
+
     }
 }

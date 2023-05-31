@@ -1,0 +1,37 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>AdminPanel</title>
+    <link type="text/css" rel="stylesheet" href="../../Content/Site.css" />
+</head>
+<body>
+    <div>
+        <h3>Покупатели</h3>
+        <table>
+            <tr>
+                <td><p>Покупатель</p></td>
+                <td><p>Адрес</p></td>
+                <td><p>Книга</p></td>
+                <td><p>Дата</p></td>
+                <td></td>
+            </tr>
+            @foreach (var b in ViewBag.Purchases)
+            {
+                <tr>
+                    <td><p>@b.Person</p></td>
+                    <td><p>@b.Address</p></td>
+                    <td><p>@b.BookId</p></td>
+                    <td><p>@b.Date</p></td>
+                </tr>
+            }
+        </table>
+    </div>
+</body>
+</html>
