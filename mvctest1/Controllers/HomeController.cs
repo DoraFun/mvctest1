@@ -108,7 +108,42 @@ namespace mvctest1.Controllers
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
 
-                // Redirect to the "index" action (list of all books)
+
+                return RedirectToAction("Index");
+            }
+
+            // If there were validation errors, display the form again
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult Delete(int id)
+        {
+            // Get the book from the database by id
+            Book book = db.Books.Find(id);
+
+            // Check if book exists
+            if (book == null)
+            {
+                return HttpNotFound(); // Return 404 error
+            }
+
+            // Pass all fields of the book to the view using ViewBag
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Delete(Book model)
+        {
+            if (ModelState.IsValid)
+            {
+                // delete entry
+
+                db.Entry(model).State = EntityState.Deleted;
+                db.SaveChanges();
+
+
                 return RedirectToAction("Index");
             }
 
