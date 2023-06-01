@@ -1,4 +1,5 @@
 ﻿using mvctest1.Models;
+using NLog.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,6 @@ namespace mvctest1.Controllers
 {
     public class AccountController : Controller
     {
-        
             public ActionResult Login()
             {
                 return View();

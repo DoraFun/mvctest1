@@ -1,9 +1,11 @@
 ﻿using mvctest1.Models;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using System.Web.DynamicData;
 using System.Web.Mvc;
 
 namespace mvctest1.Controllers
@@ -12,6 +14,12 @@ namespace mvctest1.Controllers
     {
         // создаем контекст данных
         BookContext db = new BookContext();
+
+        //logger
+        public static class Logging
+        {
+            public static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+        }
 
         public ActionResult Index()
         {
@@ -45,12 +53,23 @@ namespace mvctest1.Controllers
         [HttpPost]
         public string Buy(Purchase purchase)
         {
-            purchase.Date = DateTime.Now;
-            // добавляем информацию о покупке в базу данных
-            db.Purchases.Add(purchase);
-            // сохраняем в бд все изменения
-            db.SaveChanges();
-            return "Спасибо," + purchase.Person + ", за покупку!";
+            
+            try
+            {
+                purchase.Date = DateTime.Now;
+                // добавляем информацию о покупке в базу данных
+                db.Purchases.Add(purchase);
+                // сохраняем в бд все изменения
+                db.SaveChanges();
+                Logging.Logger.Info($"Purchase succeeded: {purchase.Person}, {purchase.Date}");
+                return "Спасибо," + purchase.Person + ", за покупку!";
+            }
+            catch (Exception ex)
+            {
+                Logging.Logger.Error(ex, "Error while trying to add purchase to database.");
+                return "Ошибка при оформлении покупки";
+            }
+
         }
 
         //добавление книг
@@ -58,6 +77,7 @@ namespace mvctest1.Controllers
         public ActionResult Create()
         {
             return View();
+
         }
 
         [HttpPost]
@@ -65,16 +85,27 @@ namespace mvctest1.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Add the new entity to the database
-                db.Books.Add(model);
-                db.SaveChanges();
+                try
+                {
+                    // Add the new entity to the database
+                    db.Books.Add(model);
+                    db.SaveChanges();
 
-                // Redirect to the "index" action (list of all books)
-                return RedirectToAction("Index");
+                    Logging.Logger.Info($"Book: {model.Name} added. ");
+                    // Redirect to the "index" action (list of all books)
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    Logging.Logger.Info(ex, "Error while trying to add book to database.");
+
+                    // If there were validation errors, display the form again
+                    return View(model);
+                }
+
             }
-
-            // If there were validation errors, display the form again
             return View(model);
+
         }
 
         //Редактирование книг
@@ -85,10 +116,10 @@ namespace mvctest1.Controllers
             Book book = db.Books.Find(id);
 
             // Check if book exists
-            if (book == null)
-            {
-                return HttpNotFound(); // Return 404 error
-            }
+            //if (book == null)
+            //{
+            //    return HttpNotFound(); // Return 404 error
+            //}
 
             // Pass all fields of the book to the view using ViewBag
             ViewBag.Id = book.Id;
@@ -104,12 +135,24 @@ namespace mvctest1.Controllers
         {
             if (ModelState.IsValid)
             {
-                // eddit entity
-                db.Entry(model).State = EntityState.Modified;
-                db.SaveChanges();
+                try
+                {
+                    // eddit entity
+                    db.Entry(model).State = EntityState.Modified;
+                    db.SaveChanges();
 
+                    Logging.Logger.Info($"Book with ID {model.Id} has been modified");
+                    return RedirectToAction("Index");
+                }
 
-                return RedirectToAction("Index");
+                catch (Exception ex)
+                {
+                    Logging.Logger.Info(ex, "Error while trying to edit book in database.");
+
+                    // If there were validation errors, display the form again
+                    return View(model);
+                }
+
             }
 
             // If there were validation errors, display the form again
@@ -140,11 +183,20 @@ namespace mvctest1.Controllers
             {
                 // delete entry
 
-                db.Entry(model).State = EntityState.Deleted;
-                db.SaveChanges();
+                try
+                {
+                    db.Entry(model).State = EntityState.Deleted;
+                    db.SaveChanges();
 
+                    Logging.Logger.Info($"Book with ID {model.Id} has been deleted.");
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    Logging.Logger.Error(ex, "Error while trying to delete book in database.");
+                    return View(model);
+                }
 
-                return RedirectToAction("Index");
             }
 
             // If there were validation errors, display the form again
